@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Monitoring Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='conf/style/style.css') }}">
+</head>
+
+<style>
+  /* Estilos generales */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #0D0D0D; /* Fondo oscuro */
+    color: #DADADA;  /* Texto claro */
+    margin: 0;
+    padding: 0;
+  }
+
+  .container-fluid {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1C1C1C; /* Fondo oscuro del contenedor */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.5em;
+    color: #00A1E4; /* Azul eléctrico */
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.9;
+  }
+
+  /* Estilos para el logo */
+  .logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente más claro para resaltar el logo */
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .logo-container img {
+    max-width: 1000px; /* Tamaño del logo aumentado */
+    height: auto;
+    filter: brightness(2.2) opacity(0.95); /* Aclarar un poco el logo para mejor visibilidad */
+    transition: transform 0.3s ease;
+  }
+
+  .logo-container:hover img {
+    transform: scale(1.1); /* Efecto de zoom más notable al hacer hover */
+    filter: brightness(1.5) opacity(1); /* Resaltar más al hacer hover */
+  }
+
+  /* Fila de cámaras */
+  .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .img-container {
+    flex: 1 1 calc(33.333% - 20px); /* Ajuste de las cámaras para usar mejor el espacio */
+    margin: 10px;
+    background-color: #262626; /* Fondo para las cámaras */
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #333; /* Borde suave */
+    transition: all 0.3s ease;
+  }
+
+  .img-container:hover {
+    border: 2px solid #00A1E4; /* Borde azul al hacer hover */
+    box-shadow: 0px 0px 15px #00A1E4;
+  }
+
+  .img-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .img-label {
+    font-size: 1.2em;
+    margin-top: 10px;
+    display: block;
+    font-weight: bold;
+    color: #00A1E4; 
+  }
+
+  h2 {
+    font-size: 1.2em;
+    margin-top: 10px;
+    color: #BFBFBF; /* Color de texto más claro */
+  }
+
+  /* Botones */
+  .btn-container {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .btn {
+    font-size: 1.3em;
+    padding: 15px 40px;
+    margin: 0 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #333;
+    color: #00A1E4; /* Azul eléctrico */
+    transition: background-color 0.3s, transform 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #444;
+    transform: scale(1.05);
+  }
+
+  .btn-detener {
+    background-color: #D32F2F; /* Rojo brillante */
+  }
+
+  .btn-detener:hover {
+    background-color: #C62828;
+  }
+
+  /* Estilo para el estado activo */
+  .active {
+    border: solid green 2px;
+    background: gray;
+  }
+
+  .active:hover {
+    background-color: gray; 
+    border-color: red; 
+    cursor: not-allowed;   
+    transform: scale(0.9);  
+    opacity: 0.5;     
+    transition: all 0.3s ease;
+  }
+</style>
+
+
+<body>
+    <div class="container-fluid">
+        <!-- Contenedor del logo -->
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='conf/img/logo.png') }}" alt="Logo de la empresa">
+        </div>
+
+        <h1>Monitoring System</h1>
+
+        <!-- Fila de cámaras -->
+        <div class="row">
+            <div class="img-container">
+                <span class="img-label">Camera 1</span>
+                <img id="img1" src="http://192.168.0.42:5000/video_feed" alt="Camera 1 Stream">
+                <h2 id="current_cam1">{{dato1}}</h2>
+            </div>
+            <div class="img-container">
+                <span class="img-label">Camera 2</span>
+                <img id="img2" src="http://192.168.0.42:5000/video_feed" alt="Camera 2 Stream">
+                <h2 id="current_cam2">{{dato2}}</h2>
+            </div>
+            <div class="img-container">
+                <span class="img-label">Camera 3</span>
+                <img id="img3" src="http://192.168.0.43:5000/video_feed" alt="Camera 3 Stream">
+                <h2 id="current_cam3">{{dato3}}</h2>
+            </div>
+        </div>
+
+        <!-- Segunda fila de cámaras -->
+        <div class="row">
+            <div class="img-container">
+                <span class="img-label">Camera 4</span>
+                <img id="img4" src="http://192.168.0.44:5000/video_feed" alt="Camera 4 Stream">
+                <h2 id="current_cam4">{{dato4}}</h2>
+            </div>
+            <div class="img-container">
+                <span class="img-label">Camera 5</span>
+                <img id="img5" src="http://192.168.0.45:5000/video_feed" alt="Camera 5 Stream">
+                <h2 id="current_cam5">{{dato5}}</h2>
+            </div>
+            <div class="img-container">
+                <span class="img-label">Camera 6</span>
+                <img id="img6" src="http://192.168.0.80:5000/video_feed" alt="Camera 6 Stream">
+                <h2 id="current_cam6">{{dato6}}</h2>
+            </div>
+        </div>
+
+        <!-- Contenedor de botones -->
+        <div class="btn-container">
+            <button class="btn btn-enviar" id="startBtn" onclick="activateDetection()">Iniciar</button>
+            <button class="btn btn-detener" onclick="detenerDeteccion()">Detener</button>
+        </div>
+    </div>
+
+    <!-- Incluye el script.js -->
+    <script src="{{ url_for('static', filename='conf/script/script.js') }}"></script>
+</body>
+</html>

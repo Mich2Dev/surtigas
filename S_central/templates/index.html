@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Monitoring Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='conf/style/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<style>
+  /* (Incluye aquí los estilos que ya tienes) */
+</style>
+
+<body>
+    <div class="container-fluid">
+        <!-- Contenedor del logo -->
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='conf/img/logo.png') }}" alt="Logo de la empresa">
+        </div>
+
+        <h1>Monitoring System</h1>
+
+        <!-- Fila de cámaras -->
+        <div class="row">
+            {% for device in devices %}
+            <div class="img-container">
+                <span class="img-label">{{ device.name }}</span>
+                <img id="img{{ loop.index }}" src="http://{{ device.ip }}:{{ device.port }}/video_feed" alt="{{ device.name }} Stream">
+                <h2>Dato: <span id="data_{{ device.name.replace(' ', '') }}">--</span></h2>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Contenedor de botones -->
+        <div class="btn-container">
+            <button class="btn btn-enviar" id="startBtn" onclick="startDetection()">Iniciar</button>
+            <button class="btn btn-detener" onclick="stopDetection()">Detener</button>
+        </div>
+
+        <!-- Contenedor de datos -->
+        <div class="data-container">
+            {% for device in devices %}
+            <div class="data-item">
+                <h3>{{ device.name }}</h3>
+                <p>Dato Final: <span id="data_{{ device.name.replace(' ', '') }}">--</span></p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Función para iniciar la detección en todos los dispositivos
+        function startDetection() {
+            $.ajax({
+                url: '/start_all',
+                type: 'POST',
+                success: function(response) {
+                    console.log(response.status);
+                },
+                error: function(error) {
+                    console.error('Error al iniciar detección en todos los dispositivos', error);
+                }
+            });
+        }
+
+        // Función para detener la detección en todos los dispositivos
+        function stopDetection() {
+            $.ajax({
+                url: '/stop_all',
+                type: 'POST',
+                success: function(response) {
+                    console.log(response.status);
+                },
+                error: function(error) {
+                    console.error('Error al detener detección en todos los dispositivos', error);
+                }
+            });
+        }
+
+        // Función para obtener los datos de todos los dispositivos
+        function fetchData() {
+            $.ajax({
+                url: '/data',
+                type: 'GET',
+                success: function(response) {
+                    for (const [device, dato] of Object.entries(response)) {
+                        const deviceId = device.replace(/\s+/g, '');
+                        $('#data_' + deviceId).text(dato !== null ? dato : '--');
+                    }
+                },
+                error: function(error) {
+                    console.error('Error al obtener datos', error);
+                }
+            });
+        }
+
+        // Actualizar datos cada 5 segundos
+        setInterval(fetchData, 5000);
+
+        // Inicializar datos al cargar la página
+        $(document).ready(function(){
+            fetchData();
+        });
+    </script>
+</body>
+</html>

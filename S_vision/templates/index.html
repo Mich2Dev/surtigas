@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Transmisión de Video con Detección</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('video_feed') }}" id="video_feed" alt="Video Stream" />
+
+    <script>
+        function startDetection() {
+            fetch('/start', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                   
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function stopDetection() {
+            fetch('/stop', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                  
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
